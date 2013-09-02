@@ -110,38 +110,38 @@ function sfsbulk_process_batch_of_users( $batch_of_users, $this_check_start_time
     $url = "http://www.stopforumspam.com/api?" . $query_string;
     echo $url . "\n";
     
-    //if ( $connection = curl_init($url) ) {
-    //    curl_setopt( $connection, CURLOPT_RETURNTRANSFER, TRUE );
-    //    $json_response = curl_exec( $connection );
-    //    $json_processed = json_decode( $json_response, true );
-    //    if ( $json_processed[ 'success' ] ) {
-    //        $results = $json_processed[ $sfsbulk_queryfield ];            
-    //        
-    //        $i = 0;
-    //        foreach ( $results as $result ) {
-    //            $fields_values_array = array();
-    //            $fields_values_array[ 'sfsbulk_checked' ] = intval( 1 );
-    //            $fields_values_array[ 'sfsbulk_last_checked' ] = intval( $this_check_start_time );
-    //            if ( $result[ 'appears' ] ) {
-    //                $fields_values_array[ 'sfsbulk_appears' ] = intval( $result[ 'appears' ] );
-    //                $fields_values_array[ 'sfsbulk_lastseen' ] = strtotime( $result[ 'lastseen' ] );
-    //                $fields_values_array[ 'sfsbulk_frequency' ] = intval( $result[ 'frequency' ] );
-    //                $fields_values_array[ 'sfsbulk_confidence' ] = floatval( $result[ 'confidence' ] );
-    //            }
-    //            // mark user as checked
-    //            $db->update_query(
-    //                              'users',
-    //                              $fields_values_array, 
-    //                              'uid = ' . intval( $batch_of_users['uid'][$i] ),
-    //                              '1'
-    //                              );
-    //            
-    //            $i++;
-    //        }
-    //    }
-    //} else {
-    //    echo "<p>curl_init() failed for {$url}</p>";
-    //}
+    if ( $connection = curl_init($url) ) {
+        curl_setopt( $connection, CURLOPT_RETURNTRANSFER, TRUE );
+        $json_response = curl_exec( $connection );
+        $json_processed = json_decode( $json_response, true );
+        if ( $json_processed[ 'success' ] ) {
+            $results = $json_processed[ $sfsbulk_queryfield ];            
+            
+            $i = 0;
+            foreach ( $results as $result ) {
+                $fields_values_array = array();
+                $fields_values_array[ 'sfsbulk_checked' ] = intval( 1 );
+                $fields_values_array[ 'sfsbulk_last_checked' ] = intval( $this_check_start_time );
+                if ( $result[ 'appears' ] ) {
+                    $fields_values_array[ 'sfsbulk_appears' ] = intval( $result[ 'appears' ] );
+                    $fields_values_array[ 'sfsbulk_lastseen' ] = strtotime( $result[ 'lastseen' ] );
+                    $fields_values_array[ 'sfsbulk_frequency' ] = intval( $result[ 'frequency' ] );
+                    $fields_values_array[ 'sfsbulk_confidence' ] = floatval( $result[ 'confidence' ] );
+                }
+                // mark user as checked
+                $db->update_query(
+                                  'users',
+                                  $fields_values_array, 
+                                  'uid = ' . intval( $batch_of_users['uid'][$i] ),
+                                  '1'
+                                  );
+                
+                $i++;
+            }
+        }
+    } else {
+        echo "<p>curl_init() failed for {$url}</p>";
+    }
 
 }
 

@@ -24,10 +24,24 @@ if (!defined("IN_MYBB")) {
     die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
+$number_of_checked_users = $db->fetch_array(
+                                            $db->simple_select( 'users', 'count(*)', 'sfsbulk_checked = 1' )
+                                            )['count(*)'];
+$number_of_spammers = null;
+if ( $number_of_checked_users ) {
+    $number_of_spammers = $db->fetch_array( $db->simple_select( 'users', 'count(*)', 'sfsbulk_checked = 1 AND sfsbulk_appears = 1' )
+                                           )['count(*)'];
+}
+
 $page->add_breadcrumb_item("SFSBulk Dashboard", "index.php?module=user-sfsbulk_dashboard");
 $page->output_header( "SFSBulk Dashboard" );
 
-// add page content here
+if ( !$number_of_checked_users ) {
+    echo "It looks like you haven't run the the sfsbulk_check_usres.php script yet.\n";
+} else {
+    echo $number_of_checked_users . " of your users were checked, out of which " . $number_of_spammers
+    . " were found spammers.\n";
+}
 
 $page->output_footer();
 
