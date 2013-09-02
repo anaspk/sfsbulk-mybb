@@ -170,14 +170,14 @@ function sfsbulk_is_installed() {
 $plugins->add_hook("admin_user_action_handler", "sfsbulk_user_action");
 
 function sfsbulk_user_action($actions) {
-    $actions['sfsbulk_delete'] = array('active' => 'sfsbulk_delete', 'file' => 'sfsbulk_delete.php');
+    $actions['sfsbulk_dashboard'] = array('active' => 'sfsbulk_dashboard', 'file' => 'sfsbulk_dashboard.php');
     return $actions;
 }
 
 $plugins->add_hook('admin_user_menu', 'sfsbulk_user_menu_item');
 
 function sfsbulk_user_menu_item($sub_menu) {
-    $sub_menu['80'] = array("id" => "sfsbulk_delete", "title" => "StopForumSpam - Bulk", "link" => "index.php?module=user-sfsbulk_delete");
+    $sub_menu['80'] = array("id" => "sfsbulk_dashboard", "title" => "SFSBulk Dashboard", "link" => "index.php?module=user-sfsbulk_dashboard");
     return $sub_menu;
 }
 
