@@ -107,34 +107,27 @@ function sfsbulk_process_batch_of_users( $batch_of_users, $this_check_start_time
         $json_response = curl_exec( $connection );
         $json_processed = json_decode( $json_response, true );
         if ( $json_processed[ 'success' ] ) {
-            $results = $json_processed[ $sfsbulk_queryfield ];
-            
+            $results = $json_processed[ $sfsbulk_queryfield ];            
             
             $i = 0;
             foreach ( $results as $result ) {
+                $fields_values_array = array();
+                $fields_values_array[ 'sfsbulk_checked' ] = intval( 1 );
+                $fields_values_array[ 'sfsbulk_last_checked' ] = intval( $this_check_start_time );
+                if ( $result[ 'appears' ] ) {
+                    $fields_values_array[ 'sfsbulk_appears' ] = intval( $result[ 'appears' ] );
+                    $fields_values_array[ 'sfsbulk_lastseen' ] = strtotime( $result[ 'lastseen' ] );
+                    $fields_values_array[ 'sfsbulk_frequency' ] = intval( $result[ 'frequency' ] );
+                    $fields_values_array[ 'sfsbulk_confidence' ] = floatval( $result[ 'confidence' ] );
+                }
                 // mark user as checked
                 $db->update_query(
                                   'users',
-                                  array(
-                                        'sfsbulk_checked' => intval( 1 ),
-                                        'sfsbulk_last_checked' => intval( $this_check_start_time )
-                                        ), 
+                                  $fields_values_array, 
                                   'uid = ' . intval( $batch_of_users['uid'][$i] ),
                                   '1'
                                   );
                 
-                if ( $result[ 'appears' ] ) {
-                    $db->update_query(
-                                      'users',
-                                      array(
-                                            'sfsbulk_appears' => intval( $result[ 'appears' ] ),
-                                            'sfsbulk_lastseen' => strtotime( $result[ 'lastseen' ] ),
-                                            'sfsbulk_frequency' => intval( $result[ 'frequency' ] ),
-                                            'sfsbulk_confidence' => floatval( $result[ 'confidence' ] )
-                                            ), 
-                                      'uid = ' . intval( $batch_of_users['uid'][$i] ),
-                                      '1' );
-                }
                 $i++;
             }
         }
