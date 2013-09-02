@@ -62,7 +62,7 @@ if ( $db->simple_select("settings", "*", "name LIKE 'sfsbulk_%'")->num_rows ) {
     
     while ( $user = $db->fetch_array($query) ) {
         $batch_of_users[ 'uid' ][ $processed_count ] = $user[ 'uid' ];
-        $batch_of_users[ 'sfsbulk_queryfield' ][ $processed_count ] = urlencode( $user[ $sfsbulk_queryfield ] );
+        $batch_of_users[ 'sfsbulk_queryfield' ][ $processed_count ] = $user[ $sfsbulk_queryfield ];
         if ( $processed_count < 14 ) {
             $processed_count++;
         } else {
@@ -71,7 +71,7 @@ if ( $db->simple_select("settings", "*", "name LIKE 'sfsbulk_%'")->num_rows ) {
         }
     }
     if ( $processed_count > 0 ) {
-        sfsbulk_process_batch_of_users( $batch_of_users, $this_check_start_time, $processed_count );
+        sfsbulk_process_batch_of_users( $batch_of_users, $this_check_start_time, $processed_count - 1 );
     }
 } else {
     echo "Please first install the plugin\n";

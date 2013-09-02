@@ -82,14 +82,22 @@ function sfsbulk_ban_user( $uid  ) {
     
 }
 
+function sfsbulk_urlencode_callback( &$value, $index, $data ) {
+    if ( $index <= $data[ 'processed_count' ] ) {
+        $value = urlencode( $value );
+    }
+}
+
 function sfsbulk_process_batch_of_users( $batch_of_users, $this_check_start_time, $processed_count = 14 ) {
     global $sfsbulk_queryfield, $db;
+    
+    array_walk( $batch_of_users[ 'sfsbulk_queryfield' ], 'sfsbulk_urlencode_callback', array( 'processed_count' => $processed_count) );
     
     $query_string = $sfsbulk_queryfield . "[]=";
     if ( $processed_count == 14 ) {
         $query_string .= implode( "&{$sfsbulk_queryfield}[]=", $batch_of_users[ 'sfsbulk_queryfield' ] );
     } else {
-        for ( $i = 0; $i < $processed_count; $i++ ) {
+        for ( $i = 0; $i <= $processed_count; $i++ ) {
             if ( $i > 0 ) {
                 $query_string .= "&{$sfsbulk_queryfield}[]=";
             }
@@ -100,40 +108,40 @@ function sfsbulk_process_batch_of_users( $batch_of_users, $this_check_start_time
     // get response in the JSON format
     $query_string .= "&f=json";
     $url = "http://www.stopforumspam.com/api?" . $query_string;
-    //echo $url . "\n";
+    echo $url . "\n";
     
-    if ( $connection = curl_init($url) ) {
-        curl_setopt( $connection, CURLOPT_RETURNTRANSFER, TRUE );
-        $json_response = curl_exec( $connection );
-        $json_processed = json_decode( $json_response, true );
-        if ( $json_processed[ 'success' ] ) {
-            $results = $json_processed[ $sfsbulk_queryfield ];            
-            
-            $i = 0;
-            foreach ( $results as $result ) {
-                $fields_values_array = array();
-                $fields_values_array[ 'sfsbulk_checked' ] = intval( 1 );
-                $fields_values_array[ 'sfsbulk_last_checked' ] = intval( $this_check_start_time );
-                if ( $result[ 'appears' ] ) {
-                    $fields_values_array[ 'sfsbulk_appears' ] = intval( $result[ 'appears' ] );
-                    $fields_values_array[ 'sfsbulk_lastseen' ] = strtotime( $result[ 'lastseen' ] );
-                    $fields_values_array[ 'sfsbulk_frequency' ] = intval( $result[ 'frequency' ] );
-                    $fields_values_array[ 'sfsbulk_confidence' ] = floatval( $result[ 'confidence' ] );
-                }
-                // mark user as checked
-                $db->update_query(
-                                  'users',
-                                  $fields_values_array, 
-                                  'uid = ' . intval( $batch_of_users['uid'][$i] ),
-                                  '1'
-                                  );
-                
-                $i++;
-            }
-        }
-    } else {
-        echo "<p>curl_init() failed for {$url}</p>";
-    }
+    //if ( $connection = curl_init($url) ) {
+    //    curl_setopt( $connection, CURLOPT_RETURNTRANSFER, TRUE );
+    //    $json_response = curl_exec( $connection );
+    //    $json_processed = json_decode( $json_response, true );
+    //    if ( $json_processed[ 'success' ] ) {
+    //        $results = $json_processed[ $sfsbulk_queryfield ];            
+    //        
+    //        $i = 0;
+    //        foreach ( $results as $result ) {
+    //            $fields_values_array = array();
+    //            $fields_values_array[ 'sfsbulk_checked' ] = intval( 1 );
+    //            $fields_values_array[ 'sfsbulk_last_checked' ] = intval( $this_check_start_time );
+    //            if ( $result[ 'appears' ] ) {
+    //                $fields_values_array[ 'sfsbulk_appears' ] = intval( $result[ 'appears' ] );
+    //                $fields_values_array[ 'sfsbulk_lastseen' ] = strtotime( $result[ 'lastseen' ] );
+    //                $fields_values_array[ 'sfsbulk_frequency' ] = intval( $result[ 'frequency' ] );
+    //                $fields_values_array[ 'sfsbulk_confidence' ] = floatval( $result[ 'confidence' ] );
+    //            }
+    //            // mark user as checked
+    //            $db->update_query(
+    //                              'users',
+    //                              $fields_values_array, 
+    //                              'uid = ' . intval( $batch_of_users['uid'][$i] ),
+    //                              '1'
+    //                              );
+    //            
+    //            $i++;
+    //        }
+    //    }
+    //} else {
+    //    echo "<p>curl_init() failed for {$url}</p>";
+    //}
 
 }
 
