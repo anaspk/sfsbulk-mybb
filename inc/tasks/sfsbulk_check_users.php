@@ -20,7 +20,7 @@
  */
 
 define("IN_MYBB", 1);
-require_once "/var/www/iiuse/global.php";
+require_once __DIR__ . "/../../global.php";
 require_once MYBB_ROOT."inc/functions_post.php";
 
 // proceed only if the plugin is installed
@@ -47,8 +47,6 @@ if ( $db->simple_select("settings", "*", "name LIKE 'sfsbulk_%'")->num_rows ) {
     $sfsbulk_conditions[] = "sfsbulk_checked = 0";
     $sfsbulk_conditions = implode( " AND ", $sfsbulk_conditions );
     
-    // just for testing
-    $sfsbulk_max_per_shift = 20;
     $query = $db->simple_select("users", "uid, {$sfsbulk_queryfield}", $sfsbulk_conditions, array( 'limit' => intval( $sfsbulk_max_per_shift ), 'orderby' => 'regdate' ) );
     
     $processed_count = 0;
@@ -56,9 +54,7 @@ if ( $db->simple_select("settings", "*", "name LIKE 'sfsbulk_%'")->num_rows ) {
                             'uid' => array_fill( 0, 15, null ),
                             'sfsbulk_queryfield' => array_fill( 0, 15, null )
                             );
-    $this_check_start_time = time();
-    echo $query->num_rows . " records selected\n";
-    echo "\n";                        
+    $this_check_start_time = time();                
     
     while ( $user = $db->fetch_array($query) ) {
         $batch_of_users[ 'uid' ][ $processed_count ] = $user[ 'uid' ];

@@ -108,7 +108,6 @@ function sfsbulk_process_batch_of_users( $batch_of_users, $this_check_start_time
     // get response in the JSON format
     $query_string .= "&f=json";
     $url = "http://www.stopforumspam.com/api?" . $query_string;
-    echo $url . "\n";
     
     if ( $connection = curl_init($url) ) {
         curl_setopt( $connection, CURLOPT_RETURNTRANSFER, TRUE );

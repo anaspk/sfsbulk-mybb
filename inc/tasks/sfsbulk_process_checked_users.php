@@ -19,8 +19,9 @@
  *
  */
 
+ 
 define("IN_MYBB", 1);
-require_once "/var/www/iiuse/global.php";
+require_once __DIR__ . "/../../global.php";
 require_once MYBB_ROOT."inc/functions_post.php";
 
 // proceed only if the plugin is installed

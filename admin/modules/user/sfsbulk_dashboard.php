@@ -26,18 +26,21 @@ if (!defined("IN_MYBB")) {
 
 $number_of_checked_users = $db->fetch_array(
                                             $db->simple_select( 'users', 'count(*)', 'sfsbulk_checked = 1' )
-                                            )['count(*)'];
+                                            );
+$number_of_checked_users = $number_of_checked_users['count(*)'];
+
 $number_of_spammers = null;
 if ( $number_of_checked_users ) {
     $number_of_spammers = $db->fetch_array( $db->simple_select( 'users', 'count(*)', 'sfsbulk_checked = 1 AND sfsbulk_appears = 1' )
-                                           )['count(*)'];
+                                           );
+    $number_of_spammers = $number_of_spammers['count(*)'];
 }
 
 $page->add_breadcrumb_item("SFSBulk Dashboard", "index.php?module=user-sfsbulk_dashboard");
 $page->output_header( "SFSBulk Dashboard" );
 
 if ( !$number_of_checked_users ) {
-    echo "It looks like you haven't run the the sfsbulk_check_usres.php script yet.\n";
+    echo "It looks like you haven't run the sfsbulk_check_users.php script yet.\n";
 } else {
     echo $number_of_checked_users . " of your users were checked, out of which " . $number_of_spammers
     . " were found spammers.\n";

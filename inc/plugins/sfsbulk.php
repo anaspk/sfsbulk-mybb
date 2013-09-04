@@ -26,7 +26,7 @@ if (!defined("IN_MYBB")) {
 
 function sfsbulk_info() {
     return array(
-        'name' => 'StopForumSpam - Bulk Spammers Detection',
+        'name' => 'StopForumSpam Bulk-checker for MyBB',
         'description' => 'Bulk check your complete, existing user base for known spammers by comparing against StopForumSpam.com database',
         'website' => 'http://anas.pk',
         'author' => 'Muhammad Anas',
@@ -82,7 +82,7 @@ function sfsbulk_install() {
         'title' => 'Maximum users to check per run of the script',
         'description' => 'Tune this number to match with your scheduling policy and the limit imposed by StopForumSpam.com on your usage of API',
         'optionscode' => 'text',
-        'value' => '2000',
+        'value' => '15',
         'disporder' => '4',
         'gid' => intval($gid));
     $db->insert_query('settings', $sfsbulk_setting);
